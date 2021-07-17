@@ -1,0 +1,60 @@
+<!DOCTYPE html> 
+<html> 
+ <head> 
+  <title> tensorflow js  </title> 
+  <!-- Ajax JavaScript File Upload Logic -->
+  <script>
+  async function uploadFile() {
+  let formData = new FormData(); 
+  formData.append("file", fileupload.files[0]);
+  await fetch('/upload.py', {
+    method: "POST", 
+    body: formData
+  }); 
+  alert('The file has been uploaded successfully.');
+  }
+  
+	
+  </script>  
+ </head> 
+ <body>
+ <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"> </script>
+	
+       <section class="title-area">
+        <h1>TensorFlow.js Layers: Demo</h1>
+        <p class="subtitle">Classify Cells with a neural network.</p>
+      </section>
+	  
+     <section>
+        <div class="region">
+          <h3>Save/Load Model</h3>
+          <div class="load-save-section">
+            <button id="load-pretrained-remote">Load pretrained model</button>
+          </div>
+        </div>
+      </section>
+	<hr />	  
+	  
+  <!-- HTML5 Input Form Elements -->
+       <section>
+        <div class="region">
+          <h3>Provide Input File to predict</h3>
+        </div>
+      </section>
+  <input id="fileupload" type="file" name="fileupload" /> 
+  <button id="upload-button" onclick="uploadFile()"> Predictions </button>
+
+  <div>
+	<h2>Predictions</h2>
+	<ol id="prediction-list"></ol>
+  </div>
+
+    <div id="predicted">
+      <div id="compoundNumber"></div>
+      <button id="clear">Clear</button>
+    </div>
+
+
+ </body> 
+</html>
