@@ -5,7 +5,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
   <script>
-          /*async function uploadFile() {
+          
+	  URL = https://github.com/vinaybist/tensorflow-js-prj/blob/main/example1/model/model.json
+	  /*async function uploadFile() {
           let formData = new FormData(); 
           formData.append("file", fileupload.files[0]);
           await fetch('/upload.py', {
@@ -29,7 +31,7 @@
         async function loadHostedPretrainedModel() {
           
           try {
-                URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
+                //URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
                 //const model = await tf.loadLayersModel('file://./model/model.json');
                 const model = await tf.loadLayersModel(URL);
                 document.getElementById('modelLoadStatusDiv').innerHTML = 'Done loading pretrained model.';
@@ -44,7 +46,7 @@
         
         
                   try {
-                URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
+                //URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
                 //const model = await tf.loadLayersModel('file://./model/model.json');
                 const model = await tf.loadLayersModel(URL);
 
