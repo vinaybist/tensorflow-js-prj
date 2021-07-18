@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>tensorflow js</title><!-- Load TensorFlow.js -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+  <script>
+          /*async function uploadFile() {
+          let formData = new FormData(); 
+          formData.append("file", fileupload.files[0]);
+          await fetch('/upload.py', {
+                method: "POST", 
+                body: formData
+          }); 
+          alert('The file has been uploaded successfully.');
+          }*/
+        async function Prediction(){   
+
+                        //trying to use dataset but couldn't -- deferred
+                        //Create a Dataset from an array of numbers:
+                        const input = document.getElementById('txtArea').value
+                        var inputArr = input.split(',').map(Number);
+                        const test_dataset = tf.data.array(inputArr);
+                        //alert("test_dataset ==> ",test_dataset);
+                        document.getElementById('resultDiv').innerHTML = await tf.tensor1d(document.getElementById('txtArea').value.split(','),'float32');
+
+                }  
+                
+        async function loadHostedPretrainedModel() {
+          
+          try {
+                URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
+                //const model = await tf.loadLayersModel('file://./model/model.json');
+                const model = await tf.loadLayersModel(URL);
+                document.getElementById('modelLoadStatusDiv').innerHTML = 'Done loading pretrained model.';
+                return model;
+          } catch (err) {
+                console.error(err);
+                document.getElementById('modelLoadStatusDiv').innerHTML = 'Loading pretrained model failed.';
+          }
+        }
+
+        async function predictOnManualInput() {
+        
+        
+                  try {
+                URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
+                //const model = await tf.loadLayersModel('file://./model/model.json');
+                const model = await tf.loadLayersModel(URL);
+
+
+          if (model == null) {
+                document.getElementById('resultDiv').innerHTML = 'ERROR: Please load model first.';
+                return;
+          }
+                        //Create a Dataset from an array of numbers:
+                        const input = document.getElementById('txtArea').value
+                        var inputArr = input.split(',').map(Number);
+                        const test_dataset = tf.data.array(inputArr);
+                        //alert(test_dataset);                  
+          // Use a tf.tidy scope to make sure that WebGL memory allocated for the
+          // predict call is released at the end.
+          tf.tidy(() => {
+         
+                // Call model.predict to get the prediction output as probabilities for
+                // the cell categories.
+                // {0: 'UnKnown', 1: 'Red', 2: 'Blue', 3: 'Green'}
+                const CELL_CLASSES =
+                ['UnKnown', 'Red', 'Blue', 'Green'];
+                //alert(test_dataset);                  
+
+                
+                inputData = document.getElementById('txtArea').value.split(',')
+                const input = tf.tensor2d([inputData], [1, 1024], 'float32');
+                const predictOut = model.predict(input);
+                //alert(predictOut)
+                //const probablity_distribution = Array.from(predictOut.dataSync());
+                const maxProb_cell = CELL_CLASSES[predictOut.argMax(-1).dataSync()[0]];
+                //Choose maximum probability
+                document.getElementById('resultDiv').innerHTML = maxProb_cell;
+                var error = document.getElementById("error")
+                error.innerHTML = "";
+          });
+
+          } catch (err) {
+                console.error(err);
+                //document.getElementById('resultDiv').innerHTML = 'Loading pretrained model failed.';
+                var error = document.getElementById("error")
+        if (err!=null) 
+        {
+            // Changing HTML to draw attention
+            error.innerHTML = "<span style='color: red;'>"+err+"<\/span>"
+                        // remove the old result if exists
+                        document.getElementById('resultDiv').innerHTML = ""
+        } else {
+            error.innerHTML = ""
+                        document.getElementById('resultDiv').innerHTML = ""
+        }
+          }
+        }
+        
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+        $(document).ready(function(){
+          $("button").click(function(){
+                $("div.divresult").empty();
+                $("#txtArea").val("");
+                $("#error").empty();
+          });
+        });       
+  </script>
+</head>
+<body>
+  <section class="title-area">
+    <h1>TensorFlow.js: Classification</h1>
+    <p class="subtitle">Classify Cells with a neural network.</p>
+  </section>
+  <section>
+    <div class="region">
+      <h3>Load model</h3>
+    </div><input id="load-pretrained-remote" type="button" value=" pretrained model" onclick="loadHostedPretrainedModel()">
+  </section>
+  <hr>
+  <div class='divloadresult' id='modelLoadStatusDiv'>
+    Status
+  </div><br>
+  <!-- HTML5 Input Form Elements -->
+  <section>
+    <div class="region">
+      <h3>Provide Input File to predict</h3>
+    </div>
+  </section>
+	<input id="fileupload" type="file" name="fileupload"> 
+	<button id="upload-button" onclick="uploadFile()">Submit</button> 
+	<input id="load-predictions" type="button" value=" Prediction" onclick="alert('hello')"><br>
+  <section>
+    <div class="region">
+      <h3>Provide Input Text to predict</h3>
+    </div>
+  </section>
+  <div class='divtxtArea' id='txtAreaDiv'>
+    <textarea id="txtArea" rows="6" cols="100" placeholder="Expecting n* 1024 e.g ==&gt; 12.33,4.11,3.777,98.11..............."></textarea>
+  </div>
+  <!-- PREDICT 1 -->
+   <input id="load-text-predictions" type="button" value=" Display Input Tensor" onclick="Prediction()"> 
+   <!-- PREDICT 2 -->
+   <input id="load-text-predictions2" type="button" value=" Predictions" onclick="predictOnManualInput()"> 
+   <!-- lets take one csv line 1, 1024 -->
+  <br>
+  <br>
+  <div class="col-6">
+    <h2 class="ml-3">Predictions (Results)</h2>
+    <div class='divresult' id='resultDiv'>
+      ...
+    </div><br>
+    <span id="error"></span>
+  </div><br>
+  <div id="predicted">
+    <button id="clear">Clear</button>
+  </div>
+</body>
+</html>
