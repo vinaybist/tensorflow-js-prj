@@ -114,6 +114,35 @@
           });
         });       
   </script>
+	
+	<style>
+		.file_upload {
+			display: inline-flex;
+			align-items: center;
+			font-size: 15px;
+		}
+		
+		.fu_input{
+			display: none;
+		}
+		.fu_button{
+			-webkit-appearance: none;
+			background: #009879;
+			border: 2px solid #00745D;
+			border-radius: 4px;
+			outline: none;
+			padding: 0.5em 0.8em;
+			margin-right: 15px;
+			font-size: 1em;
+			font-family: sans-serif;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		.fu_button:active {	
+			background: #00745D;
+		}
+	
+	</style>
 </head>
 <body>
   <section class="title-area">
@@ -137,7 +166,7 @@
   </section>
 	<div class="file_upload">
 		<input class="fu_input" type=file name="file", id="fileuploadId">
-		<button class="fu_button" type="button">Submit</button> 
+		<button class="fu_button" type="button">Submit*</button> 
 		<span class="fu_label">No File Selected</span>
 	</div>	
 
