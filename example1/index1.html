@@ -1,355 +1,356 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>tensorflow js</title><!-- Load TensorFlow.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
-    <script>
 
+<head>
+    <title>tensorflow js</title><!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <script>
         async function loadHostedPretrainedModel() {
-          
-          try {
+
+            try {
                 //URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
-		URL = "https://vinaybist.github.io/tensorflow-js-prj/example1/model/model.json"  
+                URL = "https://vinaybist.github.io/tensorflow-js-prj/example1/model/model.json"
                 //const model = await tf.loadLayersModel('file://./model/model.json');
                 const model = await tf.loadLayersModel(URL);
                 //alert(model);
                 document.getElementById('modelLoadStatusDiv').innerHTML = 'Done loading pretrained model.';
                 return model;
-          } catch (err) {
+            } catch (err) {
                 console.error(err);
                 document.getElementById('modelLoadStatusDiv').innerHTML = 'Loading pretrained model failed.';
-          }
+            }
         }
 
 
         async function predictOnManualInput() {
-        
-        
-                  try {
+
+
+            try {
                 //URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
-                URL = "https://vinaybist.github.io/tensorflow-js-prj/example1/model/model.json" 
+                URL = "https://vinaybist.github.io/tensorflow-js-prj/example1/model/model.json"
                 //const model = await tf.loadLayersModel('file://./model/model.json');
                 const model = await tf.loadLayersModel(URL);
 
 
-          if (model == null) {
-                document.getElementById('resultDiv').innerHTML = 'ERROR: Please load model first.';
-                return;
-          }
-          // Use a tf.tidy scope to make sure that WebGL memory allocated for the
-          // predict call is released at the end.
-          tf.tidy(() => {
-         
-                // Call model.predict to get the prediction output as probabilities for
-                // the cell categories.
-                // {0: 'UnKnown', 1: 'Red', 2: 'Blue', 3: 'Green'}
-                const CELL_CLASSES =
-                ['UnKnown', 'Red', 'Blue', 'Green'];
-                //alert(test_dataset);                  
+                if (model == null) {
+                    document.getElementById('resultDiv').innerHTML = 'ERROR: Please load model first.';
+                    return;
+                }
+                // Use a tf.tidy scope to make sure that WebGL memory allocated for the
+                // predict call is released at the end.
+                tf.tidy(() => {
 
-                
-                inputData = document.getElementById('txtArea').value.split(',')
-                const input = tf.tensor2d([inputData], [1, 1024], 'float32');
-                const predictOut = model.predict(input);
-                //alert(predictOut)
-                //const probablity_distribution = Array.from(predictOut.dataSync());
-                const maxProb_cell = CELL_CLASSES[predictOut.argMax(-1).dataSync()[0]];
-                //Choose maximum probability
-                document.getElementById('resultDiv').innerHTML = maxProb_cell;
-                var error = document.getElementById("error")
-                error.innerHTML = "";
-          });
+                    // Call model.predict to get the prediction output as probabilities for
+                    // the cell categories.
+                    // {0: 'UnKnown', 1: 'Red', 2: 'Blue', 3: 'Green'}
+                    const CELL_CLASSES =
+                        ['UnKnown', 'Red', 'Blue', 'Green'];
+                    //alert(test_dataset);                  
 
-          } catch (err) {
+
+                    inputData = document.getElementById('txtArea').value.split(',')
+                    const input = tf.tensor2d([inputData], [1, 1024], 'float32');
+                    const predictOut = model.predict(input);
+                    //alert(predictOut)
+                    //const probablity_distribution = Array.from(predictOut.dataSync());
+                    const maxProb_cell = CELL_CLASSES[predictOut.argMax(-1).dataSync()[0]];
+                    //Choose maximum probability
+                    document.getElementById('resultDiv').innerHTML = maxProb_cell;
+                    var error = document.getElementById("error")
+                    error.innerHTML = "";
+                });
+
+            } catch (err) {
                 console.error(err);
                 //document.getElementById('resultDiv').innerHTML = 'Loading pretrained model failed.';
                 var error = document.getElementById("error")
-        if (err!=null) 
-        {
-            // Changing HTML to draw attention
-            error.innerHTML = "<span style='color: red;'>"+err+"<\/span>"
-                        // remove the old result if exists
-                        document.getElementById('resultDiv').innerHTML = ""
-        } else {
-            error.innerHTML = ""
-                        document.getElementById('resultDiv').innerHTML = ""
-        }
-          }
+                if (err != null) {
+                    // Changing HTML to draw attention
+                    error.innerHTML = "<span style='color: red;'>" + err + "<\/span>"
+                    // remove the old result if exists
+                    document.getElementById('resultDiv').innerHTML = ""
+                } else {
+                    error.innerHTML = ""
+                    document.getElementById('resultDiv').innerHTML = ""
+                }
+            }
         }
 
     </script>
+    <!-- handling txtarea one input (Not for CSV use case) -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
-        $(document).ready(function(){
-          $("button").click(function(){
+        $(document).ready(function () {
+            $("button").click(function () {
                 $("div.divresult").empty();
                 $("#txtArea").val("");
                 $("#error").empty();
-          });
-        });       
+            });
+        });
     </script>
+    <script src="./lib/papaparse.min.js"></script>
+    <style>
+        .file_upload {
+            display: inline-flex;
+            align-items: center;
+            font-size: 15px;
+        }
 
-	<style>
-		.file_upload {
-			display: inline-flex;
-			align-items: center;
-			font-size: 15px;
-		}
-		
-		.fu_input{
-			display: none;
-		}
-		.fu_button{
-			background: #009879;
-			border: 2px solid #00745D;
-			border-radius: 4px;
-			outline: none;
-			padding: 0.5em 0.8em;
-			margin-right: 15px;
-			font-size: 1em;
-			font-family: sans-serif;
-			font-weight: bold;
-			cursor: pointer;
-		}
-		.fu_button:active {	
-			background: #00745D;
-		}
-		.fu_button:hover {
-		  background-color: #00b28f;
-		}
-		
-		.fu_label {	
-			  font-size: 0.95em;
-			  font-family: sans-serif;
-		}
+        .fu_input {
+            display: none;
+        }
 
+        .fu_button {
+            background: #009879;
+            border: 2px solid #00745D;
+            border-radius: 4px;
+            outline: none;
+            padding: 0.5em 0.8em;
+            margin-right: 15px;
+            font-size: 1em;
+            font-family: sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-		.file_upload {
-			display: inline-flex;
-			align-items: center;
-			font-size: 15px;
-		}
-		
-		.mdl_input{
-			display: none;
-		}
-		.mdl_button{
-			-webkit-appearance: none;
-			background: #009879;
-			border: 2px solid #00745D;
-			border-radius: 4px;
-			outline: none;
-			padding: 0.5em 0.8em;
-			margin-right: 15px;
-			font-size: 1em;
-			font-family: sans-serif;
-			font-weight: bold;
-			cursor: pointer;
-		}
-		.mdl_button:active {	
-			background: #00745D;
-		}
-		.mdl_button:hover {
-		  background-color: #00b28f;
-		}
-		
-		.mdl_label {	
-			  font-size: 0.95em;
-			  font-family: sans-serif;
-		}        
+        .fu_button:active {
+            background: #00745D;
+        }
+
+        .fu_button:hover {
+            background-color: #00b28f;
+        }
+
+        .fu_label {
+            font-size: 0.95em;
+            font-family: sans-serif;
+        }
+
+        .mdl_input {
+            display: none;
+        }
+
+        .mdl_button {
+            -webkit-appearance: none;
+            background: #009879;
+            border: 2px solid #00745D;
+            border-radius: 4px;
+            outline: none;
+            padding: 0.5em 0.8em;
+            margin-right: 15px;
+            font-size: 1em;
+            font-family: sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .mdl_button:active {
+            background: #00745D;
+        }
+
+        .mdl_button:hover {
+            background-color: #00b28f;
+        }
+
+        .mdl_label {
+            font-size: 0.95em;
+            font-family: sans-serif;
+        }
 
         .subtitle {
             font-family: sans-serif;
             font-size: 0.95em;
         }
-		
+
         .region {
             font-family: sans-serif;
             font-size: 0.95em;
-        }		
+        }
+
         .divloadresult {
             font-family: sans-serif;
             font-size: 0.95em;
         }
 
-        .styled-table {
+        .predict-table {
             border-collapse: collapse;
             margin: 25px 0;
             font-size: 0.9em;
             font-family: sans-serif;
             min-width: 400px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-        }	
-
-        .tableC {
-        border-collapse: collapse;
-        border-radius: 5px;
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
-        overflow: hidden;
-        font-family: "Quicksand", sans-serif;
-        font-weight: bold;
-        font-size: 14px;
         }
 
-      	
-	</style>
-
-<script src="./lib/papaparse.min.js"></script>
+        .tableC {
+            border-collapse: collapse;
+            margin: 25px 0;
+            border-radius: 5px;
+            min-width: 300px;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            font-family: "Quicksand", sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
 
 </head>
+
 <body style="background-color:powderblue;">
-  <section class="title-area">
-    <h1 style="font-size: xx-large; font-family: sans-serif;">TensorFlow.js: ExtraCellular Classification <br> <span style="font-size:.30em; font-family: sans-serif;">@Classify Cells with a neural network.</span> </h1>
-    
-  </section>
-  <section>
-    <div class="region">
-      <h3 style="font-size: x-large; font-family: sans-serif;">Load model</h3>
-    </div>
-    
-    <div class="model_upload">
-		<input class="mdl_input" type=button name="button", id="modeluploadId">
-		<button class="mdl_button" type="button" id="mdl_custom" onclick="loadHostedPretrainedModel()">Pretrained Model</button> 
-        <span class='divloadresult' id='modelLoadStatusDiv'>No Model Selected</span>
-	</div>	
-  </section>
-  <hr>
+    <section>
+        <h1 style="font-size: xx-large; font-family: sans-serif;">TensorFlow.js: ExtraCellular Classification <br> <span
+                style="font-size:.30em; font-family: sans-serif;">@Classify Cells with a neural network.</span> </h1>
 
-  <!-- HTML5 Input Form Elements -->
-  <section>
-    <div class="region">
-      <h3 style="font-size: x-large; font-family: sans-serif;">Provide Input File to predict</h3>
-    </div>
-  </section>
-	
-  
-  <div class="file_upload">
-		<input type=file id="realfileuploadId" class="fu_input">
-		<button type="button" id="customfileuploadId" class="fu_button" >Choose File</button> 
-		<span id="customfileuploadlabelId"  class="fu_label">No File Selected</span>
-	</div>	
-  <br><br>
-  <button class="fu_button" type="button" id="predict">Predict</button>
-  <br><br>
+    </section>
+    <section>
+        <div>
+            <h3 style="font-size: x-large; font-family: sans-serif;">Load model</h3>
+        </div>
 
-  <div class="col-6">
-    <h2 class="ml-3">Predictions (Results)</h2>
-    <table class="styled-table" id="tbl-data" border="1"></table>
-    <br>    
-    <div class='divresult' id='resultDiv' hidden="true">
-      
+        <div>
+            <input class="mdl_input" type=button name="button" , id="modeluploadId">
+            <button class="mdl_button" type="button" id="mdl_custom" onclick="loadHostedPretrainedModel()">Pretrained
+                Model</button>
+            <span class='divloadresult' id='modelLoadStatusDiv'>No Model Selected</span>
+        </div>
+    </section>
+    <hr>
+
+    <!-- HTML5 Input Form Elements -->
+    <section>
+        <div>
+            <h3 style="font-size: x-large; font-family: sans-serif;">Provide Input File to predict</h3>
+        </div>
+    </section>
+
+
+    <div class="file_upload">
+        <input type=file id="realfileuploadId" class="fu_input">
+        <button type="button" id="customfileuploadId" class="fu_button">Choose File</button>
+        <span id="customfileuploadlabelId" class="fu_label">No File Selected</span>
+    </div>
+    <br><br>
+    <button class="fu_button" type="button" id="predict">Predict</button>
+    <br><br>
+
+    <div>
+        <h2>Predictions (Results)</h2>
+        <table class="predict-table" id="tbl-data" border="1"></table>
+        <br>
+        <!--Hide it not needed -->
+        <div class='divresult' id='resultDiv' hidden="true" />
+        <br>
+        <span id="error"></span>
     </div><br>
-    <span id="error"></span>
-  </div><br>
-  
-<script>
-//start cite - custom button code taken from https://codepen.io/dcode-software/pen/RerBgR
-const realFileBtn = document.getElementById("realfileuploadId");
-  const customBtn = document.getElementById("customfileuploadId");
-  const customTxt = document.getElementById("customfileuploadlabelId");
 
-customBtn.addEventListener("click", function() {
-  realFileBtn.click();
-});
+    <script>
+        //start cite - custom button code is refrenced from https://codepen.io/dcode-software/pen/RerBgR
+        const realFileBtn = document.getElementById("realfileuploadId");
+        const customBtn = document.getElementById("customfileuploadId");
+        const customTxt = document.getElementById("customfileuploadlabelId");
 
-realFileBtn.addEventListener("change", function() {
-  if (realFileBtn.value) {
-    customTxt.innerHTML = realFileBtn.value.match(
-      /[\/\\]([\w\d\s\.\-\(\)]+)$/
-    )[1];
-  } else {
-    customTxt.innerHTML = "No File Selected";
-  }
-});
-//end cite - custom button code taken from https://codepen.io/dcode-software/pen/RerBgR
-</script>
+        customBtn.addEventListener("click", function () {
+            realFileBtn.click();
+        });
 
-<script type="text/javascript">
+        realFileBtn.addEventListener("change", function () {
+            if (realFileBtn.value) {
+                customTxt.innerHTML = realFileBtn.value.match(
+                    /[\/\\]([\w\d\s\.\-\(\)]+)$/
+                )[1];
+            } else {
+                customTxt.innerHTML = "No File Selected";
+            }
+        });
+        //end cite - custom button code is refrenced from https://codepen.io/dcode-software/pen/RerBgR
+    </script>
 
-let btn_predict = document.getElementById('predict')
-  
-if(btn_predict){
-    btn_predict.addEventListener('click', async ()=> {
-    document.getElementById('tbl-data').innerHTML = "";
-    //alert('You have clicked Predict button');
-    //console.log(document.getElementById('realfileuploadId').files[0]);
-    Papa.parse(document.getElementById('realfileuploadId').files[0], {
-      download: true,
-      header: false,
-      complete: async function(results) {
-					console.log(results);
-					results.data.map((data, index)=> {
-              //alert(Array.isArray(data));
-                let prid = getPrediction(data);
-				});
-					
-			}
-       });
-    });
-  }
+    <script type="text/javascript">
+
+        let btn_predict = document.getElementById('predict')
+
+        if (btn_predict) {
+            btn_predict.addEventListener('click', async () => {
+                document.getElementById('tbl-data').innerHTML = "";
+                //alert('You have clicked Predict button');
+                Papa.parse(document.getElementById('realfileuploadId').files[0], {
+                    download: true,
+                    header: false,
+                    complete: async function (results) {
+                        console.log(results);
+                        results.data.map((data, index) => {
+                            //alert(Array.isArray(data));
+                            let prid = getPrediction(data);
+                        });
+
+                    }
+                });
+            });
+        }
 
 
-  async function getPrediction(data) {
-       
-       try {
+        async function getPrediction(data) {
 
-      //URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
-       URL = "https://vinaybist.github.io/tensorflow-js-prj/example1/model/model.json" 
-       const model = await tf.loadLayersModel(URL);
-             
-               // Use a tf.tidy scope to make sure that WebGL memory allocated for the
-               // predict call is released at the end.
-               tf.tidy(() => {
- 
-                     // Call model.predict to get the prediction output as probabilities for
-                     // the cell categories.
-                     // {0: 'UnKnown', 1: 'Red', 2: 'Blue', 3: 'Green'}
-                     const CELL_CLASSES =
-                     ['UnKnown', 'Red', 'Blue', 'Green'];
-                     //data = 
-                     const input = tf.tensor2d([data], [1, 1024], 'float32');
-                     const predictOut = model.predict(input);
-                     //console.log("predictOut ==> ",predictOut)
-                     const maxProb_cell = CELL_CLASSES[predictOut.argMax(-1).dataSync()[0]];
-                     console.log("maxProb_cell ==> ",maxProb_cell)
-                     //Choose maximum probability
-                     document.getElementById('resultDiv').innerHTML = document.getElementById('resultDiv').innerHTML + "\n" + maxProb_cell;
+            try {
 
+                //URL = "http://localhost:8000/tensorflowJS/Hello/model/model.json"
+                URL = "https://vinaybist.github.io/tensorflow-js-prj/example1/model/model.json"
+                const model = await tf.loadLayersModel(URL);
+
+                // Use a tf.tidy scope to make sure that WebGL memory allocated for the
+                // predict call is released at the end.
+                tf.tidy(() => {
+
+                    // Call model.predict to get the prediction output as probabilities for cell categories.
+                    // categories MAP is such as - {0: 'UnKnown', 1: 'Red', 2: 'Blue', 3: 'Green'}
+                    const CELL_CLASSES =
+                        ['UnKnown', 'Red', 'Blue', 'Green'];
+                    const input = tf.tensor2d([data], [1, 1024], 'float32');
+                    const predictOut = model.predict(input);
+                    //console.log("predictOut ==> ",predictOut)
+
+                    //Choose maximum probability
+                    const maxProb_cell = CELL_CLASSES[predictOut.argMax(-1).dataSync()[0]];
+                    console.log("maxProb_cell ==> ", maxProb_cell)
+
+                    //setting on label only (not needed as table is used)
+                    document.getElementById('resultDiv').innerHTML = document.getElementById('resultDiv').innerHTML + "\n" + maxProb_cell;
+
+                    //table display
                     let table = document.getElementById('tbl-data');
                     let thead = table.createTHead();
                     let row = thead.insertRow();
+                    let th = document.createElement('th');
+                    let text = document.createTextNode(maxProb_cell);
+                    //add the prediction to cell
+                    th.appendChild(text);
+                    row.appendChild(th);
 
+                    //any error
+                    var error = document.getElementById("error")
+                    //empty error var
+                    error.innerHTML = "";
+
+                });
+
+            } catch (err) {
+                console.error(err);
+                //document.getElementById('resultDiv').innerHTML = 'Loading pretrained model failed.';
+                var error = document.getElementById("error")
+                if (err != null) {
+                    // Changing HTML to draw attention
+                    error.innerHTML = "<span style='color: red;'>" + err + "<\/span>"
+                    // remove the old result if exists
+                    document.getElementById('resultDiv').innerHTML = ""
                     let th = document.createElement('th');
                     //let prid = getPrediction(data);
                     let text = document.createTextNode(maxProb_cell);
                     th.appendChild(text);
                     row.appendChild(th);
-
-                     var error = document.getElementById("error")
-                     //empty error var
-                     error.innerHTML = "";
-                     //return maxProb_cell;
-               });
- 
-               } catch (err) {
-                     console.error(err);
-                     //document.getElementById('resultDiv').innerHTML = 'Loading pretrained model failed.';
-                     var error = document.getElementById("error")
-               if (err!=null) 
-               {
-                 // Changing HTML to draw attention
-                 error.innerHTML = "<span style='color: red;'>"+err+"<\/span>"
-                             // remove the old result if exists
-                             document.getElementById('resultDiv').innerHTML = ""
-                             let th = document.createElement('th');
-                                //let prid = getPrediction(data);
-                                let text = document.createTextNode(maxProb_cell);
-                                th.appendChild(text);
-                                row.appendChild(th);
-               } else {
-                 error.innerHTML = ""
-                 document.getElementById('resultDiv').innerHTML = ""
-               }
-             }
+                } else {
+                    error.innerHTML = ""
+                    document.getElementById('resultDiv').innerHTML = ""
+                }
+            }
 
             var table = document.getElementById("tbl-data");
             console.log(table.innerHTML);
@@ -379,12 +380,12 @@ if(btn_predict){
                 }
                  
             } // end color function*/
-          
- 
- 
- }  
-</script>
+
+
+
+        }
+    </script>
 
 </body>
-    
+
 </html>
