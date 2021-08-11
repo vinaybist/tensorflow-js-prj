@@ -2,9 +2,11 @@
 <html>
 
 <head>
-    <title>tensorflow js</title><!-- Load TensorFlow.js -->
+    <title>tensorflow js</title>
+    <!-- Load TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
     <script>
+        // load Pretrained Model function
         async function loadHostedPretrainedModel() {
 
             try {
@@ -21,7 +23,7 @@
             }
         }
 
-
+        // one data point on textArea prediction function
         async function predictOnManualInput() {
 
 
@@ -243,6 +245,7 @@
     </div><br>
 
     <script>
+        // handle CSV File upload and file name
         //start cite - custom button code is refrenced from https://codepen.io/dcode-software/pen/RerBgR
         const realFileBtn = document.getElementById("realfileuploadId");
         const customBtn = document.getElementById("customfileuploadId");
@@ -265,7 +268,7 @@
     </script>
 
     <script type="text/javascript">
-
+        // handle Prediction for CSV file with tensorflow.js API
         let btn_predict = document.getElementById('predict')
 
         if (btn_predict) {
@@ -287,7 +290,7 @@
             });
         }
 
-
+        // get Prediction
         async function getPrediction(data) {
 
             try {
