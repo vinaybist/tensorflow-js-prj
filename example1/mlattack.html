@@ -188,9 +188,9 @@ function previewFile(file) {
 function uploadFile(file, i) {
   var url = 'https://github.com/vinaybist/tensorflow-js-prj/tree/main/example1/upload'
   var xhr = new XMLHttpRequest()
+  xhr.setRequestHeader('Access-Control-Allow-Origin', '*');  
   var formData = new FormData()
   xhr.open('POST', url, true)
-  xhr.setRequestHeader('Access-Control-Allow-Headers', '*');
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
 
   // Update progress (can be used to show progress indicator)
