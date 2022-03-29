@@ -1,10 +1,229 @@
-<form class="box" method="post" action="" enctype="multipart/form-data">
-  <div class="box__input">
-    <input class="box__file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple />
-    <label for="file"><strong>Choose a file</strong><span class="box__dragndrop"> or drag it here</span>.</label>
-    <button class="box__button" type="submit">Upload</button>
-  </div>
-  <div class="box__uploading">Uploading…</div>
-  <div class="box__success">Done!</div>
-  <div class="box__error">Error! <span></span>.</div>
-</form>
+<h1 align='center'>Image Classification</h1>
+<div id="drop-area">
+  <form class="html-form">
+    <p>Upload the image with the file dialog or by dragging and dropping</p>
+    <input type="file" id="realfileuploadId" accept="image/*" onchange="handleFiles(this.files)">
+    <label class="button" for="realfileuploadId">Select file</label>
+  </form>
+  <progress id="progress-bar" max=100 value=0></progress> 
+</div>
+<div id="pred-button-area">
+	<label class="button" id="predict" onclick="submit()">Submit</label>
+	<label class="button">Clear</label>
+</div>
+<div id="pred-result-area">
+<div id="gallery" ></div>
+</div>
+<div id="pred-result-output">
+</div>
+
+
+<style>
+body {
+  font-family: sans-serif;
+}
+#drop-area {
+  border: 8px dashed #ccc;
+  border-radius: 20px;
+  width: 480px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+#pred-button-area {
+  border: 0px dashed #ccc;
+  border-radius: 20px;
+  width: 480px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+#pred-result-area {
+  display: inline-block;
+  border: 0px dashed #ccc;
+  border-radius: 20px;
+  width: 400px;
+  margin: 100px;
+  padding: 200x;
+}
+#pred-result-output {
+  display: inline-block;
+  width: 40px;
+  margin: 50px auto;
+  padding: 200x;
+  color: #7c795d; font-family: sans-serif; font-size: 55px; font-weight: normal; line-height: 48px;
+}
+
+#drop-area.highlight {
+  border-color: purple;
+}
+p {
+  margin-top: 0;
+}
+.html-form {
+  margin-bottom: 10px;
+}
+#gallery {
+  margin-top: 10px;
+}
+#gallery img {
+  width: 350px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.button:hover {
+  background: #ddd;
+}
+#realfileuploadId {
+  display: none;
+}
+</style>
+
+<script>
+
+// handle Prediction for file with tensorflow.js API
+let btn_predict = document.getElementById('predict')
+if (btn_predict) {
+alert('hello'+btn_predict)
+}
+
+
+//***File upload component is usewd and modified refrenced from codepen.io learning site****
+// ************************ Drag and drop ***************** //
+let dropArea = document.getElementById("drop-area")
+
+// Prevent default drag behaviors
+;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropArea.addEventListener(eventName, preventDefaults, false)   
+  document.body.addEventListener(eventName, preventDefaults, false)
+})
+
+// Highlight drop area when item is dragged over it
+;['dragenter', 'dragover'].forEach(eventName => {
+  dropArea.addEventListener(eventName, highlight, false)
+})
+
+;['dragleave', 'drop'].forEach(eventName => {
+  dropArea.addEventListener(eventName, unhighlight, false)
+})
+
+// Handle dropped files
+dropArea.addEventListener('drop', handleDrop, false)
+
+function preventDefaults (e) {
+  e.preventDefault()
+  e.stopPropagation()
+}
+
+function highlight(e) {
+  dropArea.classList.add('highlight')
+}
+
+function unhighlight(e) {
+  dropArea.classList.remove('active')
+}
+
+function handleDrop(e) {
+  var dt = e.dataTransfer
+  var files = dt.files
+
+  handleFiles(files)
+ 
+}
+
+let uploadProgress = []
+let progressBar = document.getElementById('progress-bar')
+
+function initializeProgress(numFiles) {
+  progressBar.value = 0
+  uploadProgress = []
+
+  for(let i = numFiles; i > 0; i--) {
+    uploadProgress.push(0)
+  }
+}
+
+function updateProgress(fileNumber, percent) {
+  uploadProgress[fileNumber] = percent
+  let total = uploadProgress.reduce((tot, curr) => tot + curr, 0) / uploadProgress.length
+  progressBar.value = total
+}
+
+function handleFiles(files) {
+  
+
+  files = [...files]
+  //alert(files.length)
+  initializeProgress(files.length)
+  files.forEach(uploadFile)
+  files.forEach(previewFile)
+  //alert(document.getElementById('gallery').img)
+  
+}
+
+function previewFile(file) {
+  let reader = new FileReader()
+  reader.readAsDataURL(file)
+  reader.onloadend = function() {
+    let img = document.createElement('img')
+    img.src = reader.result
+	galObj = document.getElementById("gallery");
+	if (galObj.hasChildNodes()) {
+	  galObj.removeChild(galObj.children[0]);
+	}
+    galObj.appendChild(img)
+	
+  }
+}
+
+function uploadFile(file, i) {
+  var url = 'https://github.com/vinaybist/tensorflow-js-prj/tree/main/example1/upload'
+  var xhr = new XMLHttpRequest()
+  var formData = new FormData()
+  xhr.open('POST', url, true)
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+
+  // Update progress (can be used to show progress indicator)
+  xhr.upload.addEventListener("progress", function(e) {
+    updateProgress(i, (e.loaded * 100.0 / e.total) || 100)
+  })
+
+  xhr.addEventListener('readystatechange', function(e) {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      updateProgress(i, 100) // <- Add this
+    }
+    else if (xhr.readyState == 4 && xhr.status != 200) {
+      //alert('Upload Error. Pls try again')
+    }
+  })
+
+  formData.append('upload_preset', 'default-preset')
+  formData.append('file', file)
+  xhr.send(formData)
+}
+
+
+function clear(el) {
+//alert('clear ;;;;'+el)
+  var element = el;
+  element.remove();
+}
+
+function submit() {
+  alert('submit')
+  var element = document.getElementById('pred-result-output');
+  element.innerHTML += "Test";
+}
+
+
+
+</script>
