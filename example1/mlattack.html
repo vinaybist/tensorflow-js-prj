@@ -190,6 +190,7 @@ function uploadFile(file, i) {
   var xhr = new XMLHttpRequest()
   var formData = new FormData()
   xhr.open('POST', url, true)
+  xhr.setRequestHeader('Access-Control-Allow-Headers', '*');
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
 
   // Update progress (can be used to show progress indicator)
