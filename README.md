@@ -1,4 +1,4 @@
-# tensorflow-js-prj
+# Classify Cells with a neural network
 
 ## Classify Cells with a neural network
 
